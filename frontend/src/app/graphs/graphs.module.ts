@@ -109,6 +109,7 @@ import { AsmStylerPipe } from '@app/shared/pipes/asm-styler/asm-styler.pipe';
   exports: [
     NgxEchartsModule,
     ActiveAccelerationBox,
+    AddressGraphComponent,
   ],
   providers: [
     AsmStylerPipe
