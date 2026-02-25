@@ -32,11 +32,6 @@
     flex-basis: 0;
     flex-grow: 1;
   }
-
-  .heading-label {
-    text-align: center;
-    margin: 0 1em;
-  }
 }
 
 .nav-header {
@@ -114,10 +109,24 @@
   background: var(--bg);
 }
 
-.fiat {
-  display: block;
-  display: inline-block;
-  margin-left: 10px;
+.address-container{
+  border-bottom: solid 1px var(--secondary);
+  padding: 1em;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+
+  .label{
+    font-size: 1.2em;
+    margin-right: 1em;
+    font-weight: bold;
+  }
+  .address-text{
+    font-size: 1em;
+    font-weight: bold;
+    text-align: right;
+  }
 }
 
 .field {
@@ -138,12 +147,13 @@
   .label {
     padding-left: 0.5em;
     font-size: 1.1em;
+    font-weight: bold;
     margin-right: 0;
     margin-bottom: 0.5em;
     border-bottom: solid 1px var(--secondary);
   }
-  &:last-child {
-    margin-bottom: none;
+  .label:last-child {
+    border-bottom: none;
   }
   .value {  
     font-size: 1em;
@@ -151,6 +161,11 @@
     flex-grow: 1;
     white-space: nowrap;
     text-align: end;
+  }
+  .fiat {
+  display: block;
+  display: inline-block;
+  margin-left: 10px;
   }
   .tx-label {
     display: grid;

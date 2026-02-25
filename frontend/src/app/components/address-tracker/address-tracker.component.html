@@ -29,111 +29,125 @@
         }
       </div>
     </div>
-      <div class="field" *ngIf="addressId">
-        <div class="heading-label" style="margin-bottom: 0;" i18n="address">Address
-          <div class="value" style="display: inline-block; padding-left: 3em;">
-            <app-truncate [text]="addressId" [lastChars]="6" [maxWidth]="200" [link]="['/address/' | relativeUrl, addressId]">
-              <app-clipboard [text]="addressId"></app-clipboard>
-            </app-truncate>
-          </div>
+
+    <div class="address-container" *ngIf="addressId">
+      <div class="label" i18n="address">Address</div>
+      <div class="address-text">
+        <app-truncate [text]="addressId" [lastChars]="6" [maxWidth]="200" [link]="['/address/' | relativeUrl, addressId]">
+          <app-clipboard [text]="addressId"></app-clipboard>
+        </app-truncate>
+      </div>
+    </div>
+
+    <div class="box" style="padding: 1em 0; background: var(--bg-primary);" *ngIf="(stateService.backend$ | async) === 'esplora' && address && transactions && transactions.length > 2 && !error">
+        <div> 
+          <app-address-graph
+            [address]="addressId" 
+            [isPubkey]="address?.is_pubkey" 
+            [stats]="address.chain_stats" 
+            [height]="150"
+            [left]="0"
+            [right]="0"
+            [widget]="true">
+          </app-address-graph>
         </div>
-      </div>
+    </div>  
 
-      <div class="field" *ngIf="addressId && !error">        
-          @if (confirmedBalance !== undefined && pendingBalance !== undefined) {
-            <div class="heading-label" i18n="address.balance">BALANCE</div>
-            <div class="label" i18n="address.confirmed.balance"  style="font-weight: bold;">Confirmed:
-              <div class="value" style="color: forestgreen;">
-                <app-amount [satoshis]="confirmedBalance" [noFiat]="true" style="font-size: large;"></app-amount>
-                <span class="fiat"><app-fiat [value]="confirmedBalance" style="font-weight: normal;"></app-fiat></span>
-              </div>
-            </div>
-            <div class="label" i18n="address.pending.balance" style="font-weight: bold;">Pending:
-              <div class="value" style="color: #ff9900;">
-                <app-amount [satoshis]="pendingBalance" [noFiat]="true" style="font-size: large;"></app-amount>
-                <span class="fiat"><app-fiat [value]="pendingBalance" style="font-weight: normal;"></app-fiat></span>
-              </div>
-            </div>
-          } @else {
-            <span class="skeleton-loader" style="max-width: 300px;"></span>
-            <span class="tracker-bar"></span>
-            <span class="skeleton-loader" style="max-width: 300px;"></span>
-          }
-      </div>
-
-      <div class="field" *ngIf="addressId && !error">
-        <div class="heading-label" i18n="address.transactions">RECENT ACTIVITY</div>
-        @if (transactions.length > 0 && !isLoading) {
-          <div class="field" style="padding: 0; background: transparent;">
-            <div class="tx-row" *ngFor="let tx of transactions | slice:0:5">
-              @if (tx.type === 'sent') {
-                @if(tx.isConfirmed) {
-                  <div class="tx-icon sent">
-                    <fa-icon [icon]="['fas', 'arrow-up']" [fixedWidth]="true"></fa-icon>
-                  </div>
-                } @else {
-                  <div class="tx-icon sent pending">
-                    <fa-icon [icon]="['fas', 'arrow-up']" [fixedWidth]="true"></fa-icon>
-                  </div>
-                }
-                <div class="tx-details">
-                  <span class="tx-type" i18n="address.transaction.sent">Sent</span>
-                  @if(tx.isConfirmed) {
-                    <span class="tx-time"><app-time kind="since" [time]="tx.blockTime" [fastRender]="true"></app-time></span>
-                  } @else {
-                    <span class="tx-time" style="color: #ff9900; font-weight: bold;">Pending</span>
-                  }
-                </div>
-                <div class="tx-amount-container">
-                  @if(tx.isConfirmed) {
-                    <span style="color: #dc3545;">-<app-amount [satoshis]="tx.value" [noFiat]="true"></app-amount></span>
-                  } @else {
-                    <span style="color: #ff9900;">-<app-amount [satoshis]="tx.value" [noFiat]="true"></app-amount></span>
-                  }
-                </div>
-              } 
-              @else if (tx.type === 'received') {
-                @if(tx.isConfirmed) {
-                  <div class="tx-icon received">
-                    <fa-icon [icon]="['fas', 'arrow-down']" [fixedWidth]="true"></fa-icon>
-                  </div>
-                } @else {
-                  <div class="tx-icon received pending">
-                    <fa-icon [icon]="['fas', 'arrow-down']" [fixedWidth]="true"></fa-icon>
-                  </div>
-                }
-                <div class="tx-details">
-                  <span class="tx-type" i18n="address.transaction.received">Received</span>
-                  @if(tx.isConfirmed) {
-                    <span class="tx-time"><app-time kind="since" [time]="tx.blockTime" [fastRender]="true"></app-time></span>
-                  } @else {
-                    <span class="tx-time" style="color: #ff9900; font-weight: bold;">Pending</span>
-                  }
-                </div>
-                <div class="tx-amount-container">
-                  @if(tx.isConfirmed) {
-                    <span style="color: forestgreen;">+<app-amount [satoshis]="tx.value" [noFiat]="true"></app-amount></span>
-                  } @else {
-                    <span style="color: #ff9900;">+<app-amount [satoshis]="tx.value" [noFiat]="true"></app-amount></span>
-                  }
-                </div>
-              }
+    <div class="field" *ngIf="addressId && !error">        
+        @if (confirmedBalance !== undefined && pendingBalance !== undefined) {
+          <div class="heading-label" style="margin-bottom: 0.8em;" i18n="address.balance">BALANCE</div>
+          <div class="label" i18n="address.confirmed.balance">Confirmed:
+            <div class="value" style="color: forestgreen;">
+              <app-amount [satoshis]="confirmedBalance" [noFiat]="true" style="font-size: large;"></app-amount>
+              <span class="fiat"><app-fiat [value]="confirmedBalance" style="font-weight: normal;"></app-fiat></span>
             </div>
           </div>
-        } @else if (transactions.length == 0 && !isLoading) {
-          <div class="label" i18n="address.no.transactions" style="font-size: larger;">This address has no transactions yet.</div>
+          <div class="label" i18n="address.pending.balance">Pending:
+            <div class="value" style="color: #ff9900;">
+              <app-amount [satoshis]="pendingBalance" [noFiat]="true" style="font-size: large;"></app-amount>
+              <span class="fiat"><app-fiat [value]="pendingBalance" style="font-weight: normal;"></app-fiat></span>
+            </div>
+          </div>
         } @else {
           <span class="skeleton-loader" style="max-width: 300px;"></span>
           <span class="tracker-bar"></span>
           <span class="skeleton-loader" style="max-width: 300px;"></span>
-          <span class="tracker-bar"></span>
-          <span class="skeleton-loader" style="max-width: 300px;"></span>
-          <span class="tracker-bar"></span>
-          <span class="skeleton-loader" style="max-width: 300px;"></span>
-          <span class="tracker-bar"></span>
-          <span class="skeleton-loader" style="max-width: 300px;"></span>
         }
-      </div>
+    </div>
+
+    <div class="field" *ngIf="addressId && !error">
+      <div class="heading-label" i18n="address.transactions">RECENT ACTIVITY</div>
+      @if (transactions.length > 0 && !isLoading) {
+        <div class="field" style="padding: 0; background: transparent;">
+          <div class="tx-row" *ngFor="let tx of transactions | slice:0:5">
+            @if (tx.type === 'sent') {
+              @if(tx.isConfirmed) {
+                <div class="tx-icon sent">
+                  <fa-icon [icon]="['fas', 'arrow-up']" [fixedWidth]="true"></fa-icon>
+                </div>
+              } @else {
+                <div class="tx-icon sent pending">
+                  <fa-icon [icon]="['fas', 'arrow-up']" [fixedWidth]="true"></fa-icon>
+                </div>
+              }
+              <div class="tx-details">
+                <span class="tx-type" i18n="address.transaction.sent">Sent</span>
+                @if(tx.isConfirmed) {
+                  <span class="tx-time"><app-time kind="since" [time]="tx.blockTime" [fastRender]="true"></app-time></span>
+                } @else {
+                  <span class="tx-time" style="color: #ff9900; font-weight: bold;">Pending</span>
+                }
+              </div>
+              <div class="tx-amount-container">
+                @if(tx.isConfirmed) {
+                  <span style="color: #dc3545;">-<app-amount [satoshis]="tx.value" [noFiat]="true"></app-amount></span>
+                } @else {
+                  <span style="color: #ff9900;">-<app-amount [satoshis]="tx.value" [noFiat]="true"></app-amount></span>
+                }
+              </div>
+            } 
+            @else if (tx.type === 'received') {
+              @if(tx.isConfirmed) {
+                <div class="tx-icon received">
+                  <fa-icon [icon]="['fas', 'arrow-down']" [fixedWidth]="true"></fa-icon>
+                </div>
+              } @else {
+                <div class="tx-icon received pending">
+                  <fa-icon [icon]="['fas', 'arrow-down']" [fixedWidth]="true"></fa-icon>
+                </div>
+              }
+              <div class="tx-details">
+                <span class="tx-type" i18n="address.transaction.received">Received</span>
+                @if(tx.isConfirmed) {
+                  <span class="tx-time"><app-time kind="since" [time]="tx.blockTime" [fastRender]="true"></app-time></span>
+                } @else {
+                  <span class="tx-time" style="color: #ff9900; font-weight: bold;">Pending</span>
+                }
+              </div>
+              <div class="tx-amount-container">
+                @if(tx.isConfirmed) {
+                  <span style="color: forestgreen;">+<app-amount [satoshis]="tx.value" [noFiat]="true"></app-amount></span>
+                } @else {
+                  <span style="color: #ff9900;">+<app-amount [satoshis]="tx.value" [noFiat]="true"></app-amount></span>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      } @else if (transactions.length == 0 && !isLoading) {
+        <div class="label" i18n="address.no.transactions" style="font-size: larger;">This address has no transactions yet.</div>
+      } @else {
+        <span class="skeleton-loader" style="max-width: 300px;"></span>
+        <span class="tracker-bar"></span>
+        <span class="skeleton-loader" style="max-width: 300px;"></span>
+        <span class="tracker-bar"></span>
+        <span class="skeleton-loader" style="max-width: 300px;"></span>
+        <span class="tracker-bar"></span>
+        <span class="skeleton-loader" style="max-width: 300px;"></span>
+        <span class="tracker-bar"></span>
+        <span class="skeleton-loader" style="max-width: 300px;"></span>
+      }
+    </div>
 
     <div class="bottom-panel" *ngIf="error && !isLoading">
       <app-http-error [error]="error">
